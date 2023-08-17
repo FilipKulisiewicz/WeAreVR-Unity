@@ -1,0 +1,51 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using System;
+
+public class WebCamDetect : MonoBehaviour
+{
+    public string camName = "RICOH THETA V/Z1 4K";
+    public static WebCamTexture mycam;
+    public static event Action newFrame;
+
+    void Start(){
+        Application.onBeforeRender += OnBeforeRenderCallback;
+        WebCamDevice[] devices = WebCamTexture.devices;
+        Debug.Log("Number of web cams connected: " + devices.Length);
+
+        for (int i=0; i < devices.Length; i++)
+        {
+            Debug.Log(i + " " + devices[i].name);
+        }
+
+        Renderer rend = this.GetComponentInChildren<Renderer>();
+        mycam = new WebCamTexture();
+        WebCamTexture.allowThreadedTextureCreation = true;
+        Debug.Log("The webcam name is " + camName);
+        mycam.deviceName = camName;
+        rend.material.mainTexture = mycam;
+        mycam.Play();
+    }
+
+    void OnDestroy()
+    {
+        Application.onBeforeRender -= OnBeforeRenderCallback;
+    }    
+    
+    void OnBeforeRenderCallback()
+    {
+        //Debug.Log(mycam.mipmapCount);
+        if (mycam.didUpdateThisFrame){ //// shouldn't be 1 frame before?
+            //Debug.Log(mycam.updateCount);
+            newFrame?.Invoke();
+        } 
+    }
+
+    void Update(){
+        // if (mycam.didUpdateThisFrame){ //// shouldn't be 1 frame before?
+        //    Debug.Log("Cam!" + Time.time );
+        //    newFrame?.Invoke();
+        // }
+    }
+}
