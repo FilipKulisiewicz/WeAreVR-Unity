@@ -18,16 +18,16 @@ public struct PositionRotation
 
 public class RosSubscriberRot : MonoBehaviour
 {
-    public string rosTopic = "tool0";
-    public static CustomBuffer<PositionRotation> buffer;
+    [SerializeField]
+    private string rosTopic = "tool0";
+    [SerializeField]
+    private static CustomBuffer<PositionRotation> buffer;
     private TransformStampedMsg TransformMsg;
     private Vector3 rosTranslation;
     private Quaternion rosQuaternion;
     private double rosTime;
-    private static Quaternion rotRobotToUnity = new Quaternion(0.707f, 0.707f, 0.0f, 0.0f);
-    private Quaternion rotRobotToUnity_inv = Quaternion.Inverse(rotRobotToUnity);  
-    private static Quaternion rotIMUToUnity = new Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
-    private Quaternion rotIMUToUnity_inv = Quaternion.Inverse(rotIMUToUnity);  
+    // private static Quaternion rotRobotToUnity = new Quaternion(0.707f, 0.707f, 0.0f, 0.0f); //Quaternion(x, y, z, w) #To be removed
+    // private Quaternion rotRobotToUnity_inv = Quaternion.Inverse(rotRobotToUnity);  
     
     private void OnEnable(){
         SphereManager.TransformRequest += GetDelayedValue;
@@ -58,16 +58,18 @@ public class RosSubscriberRot : MonoBehaviour
         buffer.Add(new PositionRotation(rosTranslation, rosQuaternion), rosTime);
     }
 
-    private Quaternion ConvertFromRobotCoordinatesToUnityCoordinatesUnwinded(RosMessageTypes.Geometry.QuaternionMsg robotQuaternion){ //for data from UR10e - correction: w, -x, y, -z + rotation
-        rosQuaternion = new Quaternion((float)robotQuaternion.w, -(float)robotQuaternion.x, (float)robotQuaternion.y, -(float)robotQuaternion.z);
-        return rotRobotToUnity * rosQuaternion * rotRobotToUnity_inv;
+    private Quaternion ConvertFromRobotCoordinatesToUnityCoordinatesUnwinded(RosMessageTypes.Geometry.QuaternionMsg robotQuaternion){   
+        rosQuaternion = new Quaternion((float)robotQuaternion.y, (float)robotQuaternion.z, -(float)robotQuaternion.x, (float)robotQuaternion.w); //Quaternion(x, y, z, w) // y & z flipped due to Unity Coordinate system convention 
+        return rosQuaternion;
     } 
     
     private Quaternion ConvertFromIMUCoordinatesToUnityCoordinatesUnwinded(RosMessageTypes.Geometry.QuaternionMsg imuQuaternion)
     {
-        Quaternion rosQuaternion = new Quaternion((float)imuQuaternion.y, (float)imuQuaternion.x, -(float)imuQuaternion.z, (float)imuQuaternion.w);
-        Quaternion finalQuaternion = new Quaternion(rosQuaternion.z, -rosQuaternion.y, rosQuaternion.x, rosQuaternion.w);
-        return (rotIMUToUnity * finalQuaternion * rotIMUToUnity_inv);
+        //rosQuaternion = new Quaternion((float)imuQuaternion.x, -(float)imuQuaternion.z, (float)imuQuaternion.y, (float)imuQuaternion.w); //Quaternion(x, y, z, w)  // y & z flipped due to Unity Coordinate system convention 
+        
+        rosQuaternion = new Quaternion( -(float)imuQuaternion.z, -(float)imuQuaternion.x, (float)imuQuaternion.y, (float)imuQuaternion.w); //Quaternion(x, y, z, w)  // y & z flipped due to Unity Coordinate system convention 
+        //rosQuaternion = new Quaternion( 0.0f, 0.71f, 0.0f, 0.71f) * rosQuaternion * Quaternion.Inverse(new Quaternion(  0.0f, 0.71f, 0.0f, 0.71f));
+        return rosQuaternion;
     }
     
     private static PositionRotation GetNextFrameDelayedValue(float requestedTime, float delay, bool interpolate){

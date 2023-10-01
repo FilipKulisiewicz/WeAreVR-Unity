@@ -284,7 +284,7 @@ MonoBehaviour:
   m_OriginBaseGameObject: {fileID: 455438893}
   m_CameraFloorOffsetObject: {fileID: 1606006014}
   m_RequestedTrackingOriginMode: 0
-  m_CameraYOffset: 1.1176
+  m_CameraYOffset: 0
 --- !u!4 &455438896
 Transform:
   m_ObjectHideFlags: 0
@@ -292,7 +292,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 455438893}
-  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalRotation: {x: 0.5, y: 0.5, z: -0.5, w: 0.5}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -300,7 +300,7 @@ Transform:
   - {fileID: 1606006015}
   m_Father: {fileID: 0}
   m_RootOrder: 8
-  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: 90, z: 0}
 --- !u!1 &506537592
 GameObject:
   m_ObjectHideFlags: 0
@@ -367,7 +367,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &612996970
 Transform:
   m_ObjectHideFlags: 0
@@ -1405,7 +1405,7 @@ Transform:
   m_GameObject: {fileID: 1243136520}
   m_LocalRotation: {x: 0, y: 0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: -0.45, z: 0}
-  m_LocalScale: {x: 0.29999998, y: 0.01, z: -0.3}
+  m_LocalScale: {x: 0.24, y: 0.01, z: -0.24}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1311504907}
@@ -1667,7 +1667,7 @@ Camera:
     height: 1
   near clip plane: 0.01
   far clip plane: 1000
-  field of view: 50
+  field of view: 60
   orthographic: 0
   orthographic size: 5
   m_Depth: 0
@@ -1806,7 +1806,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sphere: {fileID: 1311504902}
-  delay: 0.15
+  delay: 0.1
   interpolate: 1
 --- !u!114 &1311504909
 MonoBehaviour:
@@ -1820,7 +1820,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0256c94cb24df63459232e7a6d83c836, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  camName: RICOH THETA V/Z1 4K
+  camName: RICOH THETA V/Z1 FullHD
 --- !u!1 &1481316152
 GameObject:
   m_ObjectHideFlags: 0
@@ -2031,7 +2031,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1682459684}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 6, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2050,7 +2050,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: adb433ea69b386641ac59c6311b13975, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rosTopic: tool0
+  rosTopic: IMU
 --- !u!1 &1725560607
 GameObject:
   m_ObjectHideFlags: 0
@@ -2085,7 +2085,7 @@ MonoBehaviour:
   m_ConnectOnStart: 1
   m_KeepaliveTime: 2
   m_NetworkTimeoutSeconds: 4
-  m_SleepTimeSeconds: 0.001
+  m_SleepTimeSeconds: 0.01
   m_ShowHUD: 1
   m_TFTopics: []
   listenForTFMessages: 0
@@ -2097,7 +2097,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1725560607}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 121.38731, y: -0.7651143, z: -12.355385}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2236,7 +2236,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2112109541
 Transform:
   m_ObjectHideFlags: 0

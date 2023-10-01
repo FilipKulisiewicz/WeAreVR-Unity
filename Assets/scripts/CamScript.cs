@@ -7,19 +7,19 @@ using System.Threading.Tasks;
 
 public class CamScript : MonoBehaviour
 {
-    int imWidth = 100;
-    int imHeight = 100;
-    bool firstFrame = true;
-    Camera mCamera;
-    Texture2D texture;
+    private int imWidth = 100;
+    private int imHeight = 100;
+    private bool firstFrame = true;
+    private Camera mCamera;
+    private Texture2D texture;
 
-    Vec3b[] ImageData10;
-    Mat Image10;
-    Mat Imagediff;
-    Mat ImageGray10;
-    Mat ImageGray10Prev;
+    private Vec3b[] ImageData10;
+    private Mat Image10;
+    private Mat Imagediff;
+    private Mat ImageGray10;
+    private Mat ImageGray10Prev;
 
-    InputOutputArray diff;
+    private InputOutputArray diff;
 
     private void OnEnable(){
         SphereManager.DiffRequest += Measure;
@@ -28,7 +28,7 @@ public class CamScript : MonoBehaviour
         SphereManager.DiffRequest -= Measure;
     }
 
-    void Start(){
+    private void Start(){
         mCamera = gameObject.GetComponent<Camera>();
         ImageData10 = new Vec3b[100 * 100];
         Image10 = new Mat(100, 100, MatType.CV_8UC3);
@@ -38,9 +38,9 @@ public class CamScript : MonoBehaviour
         Imagediff = new Mat(100, 100, MatType.CV_8UC1);
         diff = new InputOutputArray(Imagediff);
     }
-    double a;
+    private double a;
 
-    double Measure(){
+    private double Measure(){
         texture = RTImage();
 
         diff = new InputOutputArray(ImageGray10Prev);
@@ -59,7 +59,7 @@ public class CamScript : MonoBehaviour
         return a;
     }
 
-    void TextureToMat(Texture2D _webcamTexture, Vec3b[] ImageData, Mat Image)
+    private void TextureToMat(Texture2D _webcamTexture, Vec3b[] ImageData, Mat Image)
     {
         // Color32 array : r, g, b, a
         
@@ -85,7 +85,7 @@ public class CamScript : MonoBehaviour
             }
         });
         // assign the Vec3b array to Mat
-        Image.SetArray(0, 0, ImageData); //looooooooong 
+        Image.SetArray(0, 0, ImageData); //time consuming 
     }
 
     private Texture2D RTImage()

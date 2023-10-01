@@ -3,18 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using RosMessageTypes.Geometry;
 using Unity.Robotics.ROSTCPConnector.ROSGeometry;
-using System;
+using System; 
 
 public class SphereManager : MonoBehaviour
 {
-    public GameObject sphere;  
     public static event Func<float, float, bool, PositionRotation> TransformRequestFrame;
     public static event Func<float, bool, PositionRotation> TransformRequest;
     public static event Func<double> DiffRequest; 
-
-    public float delay = 0.12f; 
-    public bool interpolate = true;
-    private float frametime = 1.0f / 29.97f;
+    [SerializeField]
+    private GameObject sphere;  
+    [SerializeField]
+    private float delay = 0.15f; //
+    [SerializeField]
+    private bool interpolate = true;
+    private const float frametime = 1.0f / 29.97f;
     
     private void OnEnable(){
         WebCamDetect.newFrame += Unwind;
@@ -28,17 +30,26 @@ public class SphereManager : MonoBehaviour
     private float timeDiff;
     private PositionRotation fromBuffer;
     
-    double diff;
-    double diff2;
-    Quaternion rot1;
+    // private double diff;
+    // private double diff2;
+    // private Quaternion rot1;
+    Quaternion correctionRot = new Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
+    bool IMUVertical = true;
+    bool oldUnwinding = false;
+
+    public void Start(){
+        if (IMUVertical == true){
+            correctionRot = new Quaternion(0.0f, 0.0f, 0.71f, 0.71f);
+        }
+    }
+
     public void Unwind(){
-        if(Time.time < 5.0f){ //old unwinding
+        if(Time.time < 2.0f || oldUnwinding == true){ //old unwinding
             fromBuffer = (PositionRotation)TransformRequest?.Invoke(delay, interpolate);
             requestedTime = Time.time;
         }
         else{ //framerate based unwinding
-            requestedTime = lastFrame + frametime; //0.047 and 0.025
-            diff = DiffRequest.Invoke();
+            requestedTime = lastFrame + frametime; //0.047 and -0.025
             if(Time.time - requestedTime > 0.047f  || Time.time - requestedTime < -0.025f){ //or while
                 Debug.Log("pre: " + (Time.time - requestedTime));
                 if(Time.time - requestedTime > 0){
@@ -52,10 +63,11 @@ public class SphereManager : MonoBehaviour
             }
             fromBuffer = (PositionRotation)TransformRequestFrame?.Invoke(requestedTime, delay, interpolate);            
         }
-        sphere.transform.rotation = fromBuffer.rotation;
+        sphere.transform.rotation = correctionRot * fromBuffer.rotation; 
         
-        Quaternion rot1 = fromBuffer.rotation;
-        diff = DiffRequest.Invoke();
+        /* Visual check for the skipped frame detection - idea dropped due to too big computational overhead during early tests
+        Quaternion rot1 = fromBuffer.rotation; 
+        diff = DiffRequest.Invoke(); //
 
         if(false){
             Debug.Log("Check " + diff);
@@ -83,13 +95,16 @@ public class SphereManager : MonoBehaviour
                 diff = DiffRequest.Invoke();
             }
         }        
-        
+        */
+
+        /* Debug options
         //Debug.Log("Time.time:" + Time.time);
         //Debug.Log("requestedTime:" + requestedTime);
         //Debug.Log((Time.time - lastFrameUnityTime));
         //Debug.Log((Time.time - requestedTime)); 
+        */
+
         lastFrame = requestedTime;
-    
     }
 }
 
