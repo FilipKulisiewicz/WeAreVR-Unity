@@ -1,0 +1,145 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.InputSystem;
+using Tracker;
+//using Varjo.XR;
+using System.IO;
+public class StartScene : MonoBehaviour
+{
+    private Rect windowRect = new Rect(20,20,150,320);
+    string[] typeChoices = {"Torture", "Control", "Double Rotation"};
+
+    public PersistentCamera system;
+    public TrackingController tracking;
+//    EyeTracking eyeTracker;
+    public string basePath;
+    public bool tutorial = false;
+    bool areSure=false;
+    public bool useBasePath = false;
+    // Start is called before the first frame update
+    void Start()
+    {
+        if(tutorial)
+            windowRect.height += 40;
+        system = PersistentCamera.instance;
+        tracking = TrackingController.instance;
+//        eyeTracker = EyeTracking.instance;
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if(Keyboard.current.escapeKey.wasPressedThisFrame)
+            Application.Quit();
+    }
+
+    void OnGUI()
+    {
+        windowRect = GUI.Window(0, windowRect, WindowFunction, "Controls"); 
+    }
+
+    void WindowFunction(int windowID)
+    {
+        GUI.Label(new Rect(5,10,140,30), "Subject ID:");
+        system.SubjectID = GUI.TextField(new Rect(5,40,140,30), system.SubjectID);
+        int ch = system.choice;
+        system.choice = GUI.SelectionGrid(new Rect(5,80,140,60), system.choice, typeChoices,1,GUI.skin.toggle);
+        if(ch!=system.choice)
+            areSure=false;
+        if(GUI.Button(new Rect(5,160,140,30),"Reset Camera"))
+            CustomReset.reset();
+        
+        if(GUI.Button(new Rect(5,200,140,30), "Start Practice"))
+        {
+            system.LoadScene("Practice");
+        }
+        if(tutorial)
+            {
+                if( GUI.Button(new Rect(5,280,140,30),"Tutorial"))
+                {
+                    GameObject obj = GameObject.FindGameObjectWithTag("Tutorial");
+                    Debug.Log(obj);
+                    if(obj!=null)
+                    {
+                        obj.transform.GetChild(0).gameObject.SetActive(true);
+                        obj.transform.GetChild(1).gameObject.SetActive(true);
+                    }
+                    system.LoadScene("Tutorial");   
+                }
+                
+            }
+        
+        if(!areSure)
+        {
+            if(GUI.Button(new Rect(5,240,140,30), "Start Run"))
+            {
+                if(system.choicesDone[system.choice]==false)
+                {
+                    if(useBasePath)
+                    {
+                        tracking.basePath = System.IO.Path.Combine(Application.persistentDataPath, basePath,system.SubjectID, typeChoices[system.choice].ToLower().Replace(' ', '_') + "_");
+                        if (!System.IO.Directory.Exists(System.IO.Path.Combine(Application.persistentDataPath, basePath, system.SubjectID)))
+                            System.IO.Directory.CreateDirectory(System.IO.Path.Combine(Application.persistentDataPath, basePath, system.SubjectID));
+                    }
+                    else
+                    {
+                        tracking.basePath = System.IO.Path.Combine(basePath, system.SubjectID, typeChoices[system.choice].ToLower().Replace(' ', '_') + "_");
+                        if (!System.IO.Directory.Exists(System.IO.Path.Combine(basePath, system.SubjectID)))
+                            System.IO.Directory.CreateDirectory(System.IO.Path.Combine(basePath, system.SubjectID));
+                    }
+                    eyeTracker.filename = tracking.basePath + "eyes.csv";
+                    
+                    Debug.Log(tracking.basePath);
+                    Debug.Log(System.IO.Directory.Exists(System.IO.Path.Combine(basePath, system.SubjectID)));
+                    system.LoadScene("Run");
+                }
+                else
+                    areSure = true;
+                
+            }
+        }
+        else
+        {
+            if(GUI.Button(new Rect(5,240,140,30), "Are you sure?"))
+            {
+                if (useBasePath)
+                {
+                    tracking.basePath = System.IO.Path.Combine(Application.persistentDataPath, basePath, system.SubjectID, typeChoices[system.choice].ToLower().Replace(' ', '_') + "_");
+                }
+                else
+                {
+                    tracking.basePath = System.IO.Path.Combine(basePath, system.SubjectID, typeChoices[system.choice].ToLower().Replace(' ', '_') + "_");
+                }
+                eyeTracker.filename = tracking.basePath + "eyes.csv";
+                if (!System.IO.Directory.Exists(System.IO.Path.Combine(basePath, system.SubjectID)))
+                    System.IO.Directory.CreateDirectory(System.IO.Path.Combine(basePath, system.SubjectID));
+                system.LoadScene("Run");
+                areSure=false;
+            }
+        }
+
+        if(GUI.Button(new Rect(5,280,140,30), "Save IPD: " + VarjoEyeTracking.GetIPDEstimate()))
+        {
+            string path = "";
+            if (useBasePath)
+            {
+                path = System.IO.Path.Combine(Application.persistentDataPath, basePath, system.SubjectID);
+            }
+            else
+            {
+                path = System.IO.Path.Combine(Application.persistentDataPath, system.SubjectID);
+            }
+            if (!System.IO.Directory.Exists(path))
+                System.IO.Directory.CreateDirectory(path);
+            string file = System.IO.Path.Combine(path, "IPD.txt");
+
+            // using (StreamWriter sw = new StreamWriter(file, true))
+            // {
+            //     sw.WriteLine(VarjoEyeTracking.GetIPDEstimate());
+            // }
+        }
+        
+
+    }
+}
